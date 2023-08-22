@@ -14,7 +14,7 @@ public class PuniekBot {
     private final ShardManager shardManager;
 
     public PuniekBot() throws LoginException {
-        String token = "MTA3NzU3ODk5NjY5MjMwMzk3Mg.Gzok2M.kowp2mDCET1_agqkL2OwzESjM4JfAC-xPvVNek";
+        String token = "MTA3NzU3ODk5NjY5MjMwMzk3Mg.GTsTUk.6cSH_9UpHR0HujdDdq7ANPRKivsENwwIUeQ3f0";
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(token);
         builder.setStatus(OnlineStatus.ONLINE);
         builder.setActivity(Activity.watching("Puńka"));

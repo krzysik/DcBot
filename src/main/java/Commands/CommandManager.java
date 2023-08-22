@@ -1,11 +1,18 @@
 package Commands;
 
+import Listeners.RankInLol;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -31,6 +38,14 @@ public class CommandManager extends ListenerAdapter {
             showFarmazons(event);
         }else if (command.equals("longeststreak")){
             showHighestStreak(event);
+        }else if (command.equals("ranga")){
+            OptionMapping messageOption = event.getOption("nick");
+            String summonerName = messageOption.getAsString();
+            try {
+                showRankInLol(event,summonerName);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
         }
 
 }
@@ -44,9 +59,89 @@ public class CommandManager extends ListenerAdapter {
         commandData.add(Commands.slash("farmazon","Dodaje kolejnego farmazona"));
         commandData.add(Commands.slash("farmazons", "Wyświetla ilość farmazonów"));
         commandData.add(Commands.slash("longeststreak","Pokazuje największy streak Puniowskiego (narazie nic nie robi)"));
+        commandData.add(Commands.slash("ranga","Pokazuje range gracza w league of legends").addOption(OptionType.STRING,"nick","nick",true));
         event.getGuild().updateCommands().addCommands(commandData).queue();
     }
+    public void showRankInLol(@NotNull SlashCommandInteractionEvent event, String summonerName) throws ParseException {
+        RankInLol rank = new RankInLol();
+        String id = rank.getEncryptedSummonerId(summonerName);
 
+
+        JSONParser parse = new JSONParser();
+        JSONObject dataSoloObject = new JSONObject();
+        JSONObject dataFlexObject = new JSONObject();
+        JSONObject data = new JSONObject();
+        System.out.println(rank.getInfoAboutAccount(id).size());
+        if (rank.getInfoAboutAccount(id).size() == 3) {
+            data = (JSONObject) parse.parse(String.valueOf(rank.getInfoAboutAccount(id).get(0)));
+            if(data.get("queueType").equals("RANKED_SOLO_5x5")){
+                dataSoloObject = data;
+                event.getGuild().getTextChannelById("832636783161901156").sendMessage("Nick: " + dataSoloObject.get("summonerName").toString() + "\n" + "Kolejka: " + dataSoloObject.get("queueType").toString() + "\n" + "Ranga: " + dataSoloObject.get("tier").toString() + " " + dataSoloObject.get("rank").toString() + "\nIlość punktów: " + dataSoloObject.get("leaguePoints").toString() + "\nIlość wygranych: " + dataSoloObject.get("wins").toString() + "\nIlość przegranych: " + dataSoloObject.get("losses").toString()).queue();
+            }else if (data.get("queueType").equals("RANKED_FLEX_SR")){
+                dataFlexObject=data;
+                event.getGuild().getTextChannelById("832636783161901156").sendMessage("Nick: " + dataFlexObject.get("summonerName").toString() + "\n" + "Kolejka: " + dataFlexObject.get("queueType").toString() + "\n" + "Ranga: " + dataFlexObject.get("tier").toString() + " " + dataFlexObject.get("rank").toString() + "\nIlość punktów: " + dataFlexObject.get("leaguePoints").toString() + "\nIlość wygranych: " + dataFlexObject.get("wins").toString() + "\nIlość przegranych: " + dataFlexObject.get("losses").toString()).queue();
+            }
+            data = (JSONObject) parse.parse(String.valueOf(rank.getInfoAboutAccount(id).get(1)));
+            if(data.get("queueType").equals("RANKED_SOLO_5x5")){
+                dataSoloObject=data;
+                event.getGuild().getTextChannelById("832636783161901156").sendMessage("Nick: " + dataSoloObject.get("summonerName").toString() + "\n" + "Kolejka: " + dataSoloObject.get("queueType").toString() + "\n" + "Ranga: " + dataSoloObject.get("tier").toString() + " " + dataSoloObject.get("rank").toString() + "\nIlość punktów: " + dataSoloObject.get("leaguePoints").toString() + "\nIlość wygranych: " + dataSoloObject.get("wins").toString() + "\nIlość przegranych: " + dataSoloObject.get("losses").toString()).queue();
+
+            }else if (data.get("queueType").equals("RANKED_FLEX_SR")){
+                dataFlexObject=data;
+                event.getGuild().getTextChannelById("832636783161901156").sendMessage("Nick: " + dataFlexObject.get("summonerName").toString() + "\n" + "Kolejka: " + dataFlexObject.get("queueType").toString() + "\n" + "Ranga: " + dataFlexObject.get("tier").toString() + " " + dataFlexObject.get("rank").toString() + "\nIlość punktów: " + dataFlexObject.get("leaguePoints").toString() + "\nIlość wygranych: " + dataFlexObject.get("wins").toString() + "\nIlość przegranych: " + dataFlexObject.get("losses").toString()).queue();
+
+            }
+            data = (JSONObject) parse.parse(String.valueOf(rank.getInfoAboutAccount(id).get(2)));
+            if(data.get("queueType").equals("RANKED_SOLO_5x5")){
+                dataSoloObject=data;
+                event.getGuild().getTextChannelById("832636783161901156").sendMessage("Nick: " + dataSoloObject.get("summonerName").toString() + "\n" + "Kolejka: " + dataSoloObject.get("queueType").toString() + "\n" + "Ranga: " + dataSoloObject.get("tier").toString() + " " + dataSoloObject.get("rank").toString() + "\nIlość punktów: " + dataSoloObject.get("leaguePoints").toString() + "\nIlość wygranych: " + dataSoloObject.get("wins").toString() + "\nIlość przegranych: " + dataSoloObject.get("losses").toString()).queue();
+
+            }else if (data.get("queueType").equals("RANKED_FLEX_SR")){
+                dataFlexObject=data;
+                event.getGuild().getTextChannelById("832636783161901156").sendMessage("Nick: " + dataFlexObject.get("summonerName").toString() + "\n" + "Kolejka: " + dataFlexObject.get("queueType").toString() + "\n" + "Ranga: " + dataFlexObject.get("tier").toString() + " " + dataFlexObject.get("rank").toString() + "\nIlość punktów: " + dataFlexObject.get("leaguePoints").toString() + "\nIlość wygranych: " + dataFlexObject.get("wins").toString() + "\nIlość przegranych: " + dataFlexObject.get("losses").toString()).queue();
+
+            }
+
+        } else if (rank.getInfoAboutAccount(id).size() == 2) {
+            data = (JSONObject) parse.parse(String.valueOf(rank.getInfoAboutAccount(id).get(0)));
+            if(data.get("queueType").equals("RANKED_SOLO_5x5")){
+                dataSoloObject=data;
+                event.getGuild().getTextChannelById("832636783161901156").sendMessage("Nick: " + dataSoloObject.get("summonerName").toString() + "\n" + "Kolejka: " + dataSoloObject.get("queueType").toString() + "\n" + "Ranga: " + dataSoloObject.get("tier").toString() + " " + dataSoloObject.get("rank").toString() + "\nIlość punktów: " + dataSoloObject.get("leaguePoints").toString() + "\nIlość wygranych: " + dataSoloObject.get("wins").toString() + "\nIlość przegranych: " + dataSoloObject.get("losses").toString()).queue();
+
+            }else if (data.get("queueType").equals("RANKED_FLEX_SR")){
+                dataFlexObject=data;
+                event.getGuild().getTextChannelById("832636783161901156").sendMessage("Nick: " + dataFlexObject.get("summonerName").toString() + "\n" + "Kolejka: " + dataFlexObject.get("queueType").toString() + "\n" + "Ranga: " + dataFlexObject.get("tier").toString() + " " + dataFlexObject.get("rank").toString() + "\nIlość punktów: " + dataFlexObject.get("leaguePoints").toString() + "\nIlość wygranych: " + dataFlexObject.get("wins").toString() + "\nIlość przegranych: " + dataFlexObject.get("losses").toString()).queue();
+
+            }
+            data = (JSONObject) parse.parse(String.valueOf(rank.getInfoAboutAccount(id).get(1)));
+            if(data.get("queueType").equals("RANKED_SOLO_5x5")){
+                dataSoloObject=data;
+                event.getGuild().getTextChannelById("832636783161901156").sendMessage("Nick: " + dataSoloObject.get("summonerName").toString() + "\n" + "Kolejka: " + dataSoloObject.get("queueType").toString() + "\n" + "Ranga: " + dataSoloObject.get("tier").toString() + " " + dataSoloObject.get("rank").toString() + "\nIlość punktów: " + dataSoloObject.get("leaguePoints").toString() + "\nIlość wygranych: " + dataSoloObject.get("wins").toString() + "\nIlość przegranych: " + dataSoloObject.get("losses").toString()).queue();
+
+            }else if (data.get("queueType").equals("RANKED_FLEX_SR")){
+                dataFlexObject=data;
+                event.getGuild().getTextChannelById("832636783161901156").sendMessage("Nick: " + dataFlexObject.get("summonerName").toString() + "\n" + "Kolejka: " + dataFlexObject.get("queueType").toString() + "\n" + "Ranga: " + dataFlexObject.get("tier").toString() + " " + dataFlexObject.get("rank").toString() + "\nIlość punktów: " + dataFlexObject.get("leaguePoints").toString() + "\nIlość wygranych: " + dataFlexObject.get("wins").toString() + "\nIlość przegranych: " + dataFlexObject.get("losses").toString()).queue();
+
+            }
+        }else if (rank.getInfoAboutAccount(id).size() == 1){
+            data = (JSONObject) parse.parse(String.valueOf(rank.getInfoAboutAccount(id).get(0)));
+            if(data.get("queueType").equals("RANKED_SOLO_5x5")){
+                dataSoloObject=data;
+                event.getGuild().getTextChannelById("832636783161901156").sendMessage("Nick: " + dataSoloObject.get("summonerName").toString() + "\n" + "Kolejka: " + dataSoloObject.get("queueType").toString() + "\n" + "Ranga: " + dataSoloObject.get("tier").toString() + " " + dataSoloObject.get("rank").toString() + "\nIlość punktów: " + dataSoloObject.get("leaguePoints").toString() + "\nIlość wygranych: " + dataSoloObject.get("wins").toString() + "\nIlość przegranych: " + dataSoloObject.get("losses").toString()).queue();
+
+            }else if (data.get("queueType").equals("RANKED_FLEX_SR")){
+                dataFlexObject=data;
+                event.getGuild().getTextChannelById("832636783161901156").sendMessage("Nick: " + dataFlexObject.get("summonerName").toString() + "\n" + "Kolejka: " + dataFlexObject.get("queueType").toString() + "\n" + "Ranga: " + dataFlexObject.get("tier").toString() + " " + dataFlexObject.get("rank").toString() + "\nIlość punktów: " + dataFlexObject.get("leaguePoints").toString() + "\nIlość wygranych: " + dataFlexObject.get("wins").toString() + "\nIlość przegranych: " + dataFlexObject.get("losses").toString()).queue();
+
+            }else{
+                event.getGuild().getTextChannelById("832636783161901156").sendMessage(summonerName+" nie rozegrał rankedów").queue();
+            }
+        }else{
+            event.getGuild().getTextChannelById("832636783161901156").sendMessage(summonerName+" nie rozegrał rankedów").queue();
+        }
+
+
+    }
     public void showStreak(@NotNull SlashCommandInteractionEvent event){
         String last = null,line = null;
         int i = 0;
