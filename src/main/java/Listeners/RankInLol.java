@@ -1,9 +1,12 @@
 package Listeners;
 
+import Model.FlexModel;
+import Model.SoloModel;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
+import org.springframework.web.client.RestTemplate;
 
 import java.net.HttpURLConnection;
 
@@ -17,7 +20,7 @@ public class RankInLol extends ListenerAdapter {
         JSONObject dataObject = null;
         try {
 
-            URL url = new URL("https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName + "?api_key=RGAPI-8a601150-2637-4228-ab3a-420bd00f570e");
+            URL url = new URL("https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName + "?api_key=RGAPI-71b42d47-d84b-4cc8-9284-c7814fec28b7");
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -48,49 +51,49 @@ public class RankInLol extends ListenerAdapter {
 
         return dataObject.get("id").toString();
     }
-    public JSONArray getInfoAboutAccount(String encryptedSummonerId) {
-        JSONObject countryData = new JSONObject();
-        StringBuilder informationString = null;
-        JSONArray dataObject = null;
+    public SoloModel getInfoAboutSoloQueue(String encryptedSummonerId) {
+
+       SoloModel solo = new SoloModel();
+        String url = "https://eun1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + encryptedSummonerId + "?api_key=RGAPI-71b42d47-d84b-4cc8-9284-c7814fec28b7";
         try {
+            RestTemplate restTemplate = new RestTemplate();
+            SoloModel[] data = restTemplate.getForObject(url, SoloModel[].class);
 
-            URL url = new URL("https://eun1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + encryptedSummonerId + "?api_key=RGAPI-8a601150-2637-4228-ab3a-420bd00f570e");
-
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.connect();
-
-            int responseCode = conn.getResponseCode();
-
-            if (responseCode != 200) {
-                throw new RuntimeException("HttpResponseCode: " + responseCode);
-            } else {
-
-                informationString = new StringBuilder();
-                Scanner scanner = new Scanner(url.openStream());
-
-                while (scanner.hasNext()) {
-                    informationString.append(scanner.nextLine());
+            if (data != null) {
+                for (SoloModel entry : data) {
+                    if ("RANKED_SOLO_5x5".equals(entry.getQueueType())) {
+                        solo = entry;
+                    }
                 }
-
-                scanner.close();
-
-                //JSON simple library Setup with Maven is used to convert strings to JSON
-                JSONParser parse = new JSONParser();
-                dataObject = (JSONArray) parse.parse(String.valueOf(informationString));
-                //Get the first JSON object in the JSON array
-              //  System.out.println(dataObject.get(1));
-
-            //    countryData = (JSONObject) dataObject.get(1);
-
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if(dataObject == null){
-            return null;
+
+        return solo;
+    }
+
+    public FlexModel getInfoAboutFlexQueue(String encryptedSummonerId) {
+
+        FlexModel flex = new FlexModel();
+        String url = "https://eun1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + encryptedSummonerId + "?api_key=RGAPI-71b42d47-d84b-4cc8-9284-c7814fec28b7";
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            FlexModel[] data = restTemplate.getForObject(url, FlexModel[].class);
+
+            if (data != null) {
+                for (FlexModel entry : data) {
+                    if ("RANKED_FLEX_SR".equals(entry.getQueueType())) {
+                        flex = entry;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        return dataObject;
+        return flex;
     }
+
 }
+
