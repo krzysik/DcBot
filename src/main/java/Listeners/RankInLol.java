@@ -1,60 +1,47 @@
 package Listeners;
 
+import Model.AccountModel;
 import Model.FlexModel;
 import Model.SoloModel;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.HttpURLConnection;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.Scanner;
 
 
 public class RankInLol extends ListenerAdapter {
+    String apiKey = System.getenv("API_KEY");
+
 
     public String getEncryptedSummonerId(String summonerName) {
-        JSONObject dataObject = null;
-        try {
+        System.out.println(apiKey);
+        AccountModel account = new AccountModel();
+          String url = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName + "?api_key="+apiKey;
+          try{
+              RestTemplate restTemplate = new RestTemplate();
+              AccountModel data = restTemplate.getForObject(url,AccountModel.class);
+              if(data != null){
+                  account = data;
+              }
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
 
-            URL url = new URL("https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName + "?api_key=RGAPI-71b42d47-d84b-4cc8-9284-c7814fec28b7");
 
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.connect();
-
-            int responseCode = conn.getResponseCode();
-
-            if (responseCode != 200) {
-                throw new RuntimeException("HttpResponseCode: " + responseCode);
-            } else {
-
-                StringBuilder informationString = new StringBuilder();
-                Scanner scanner = new Scanner(url.openStream());
-
-                while (scanner.hasNext()) {
-                    informationString.append(scanner.nextLine());
-                }
-
-                scanner.close();
-
-                JSONParser parser = new JSONParser();
-                dataObject = (JSONObject) parser.parse(String.valueOf(informationString));
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return dataObject.get("id").toString();
+        return account.getId().toString();
     }
     public SoloModel getInfoAboutSoloQueue(String encryptedSummonerId) {
 
        SoloModel solo = new SoloModel();
-        String url = "https://eun1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + encryptedSummonerId + "?api_key=RGAPI-71b42d47-d84b-4cc8-9284-c7814fec28b7";
+        String url = "https://eun1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + encryptedSummonerId + "?api_key="+apiKey;
         try {
             RestTemplate restTemplate = new RestTemplate();
             SoloModel[] data = restTemplate.getForObject(url, SoloModel[].class);
@@ -76,7 +63,7 @@ public class RankInLol extends ListenerAdapter {
     public FlexModel getInfoAboutFlexQueue(String encryptedSummonerId) {
 
         FlexModel flex = new FlexModel();
-        String url = "https://eun1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + encryptedSummonerId + "?api_key=RGAPI-71b42d47-d84b-4cc8-9284-c7814fec28b7";
+        String url = "https://eun1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + encryptedSummonerId + "?api_key="+apiKey;
         try {
             RestTemplate restTemplate = new RestTemplate();
             FlexModel[] data = restTemplate.getForObject(url, FlexModel[].class);
