@@ -4,18 +4,7 @@ import Model.AccountModel;
 import Model.FlexModel;
 import Model.SoloModel;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-
-import org.json.simple.*;
-import org.json.simple.parser.JSONParser;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.HttpURLConnection;
-
-import java.net.URL;
-import java.util.Map;
-import java.util.Scanner;
-
 
 public class RankInLol extends ListenerAdapter {
     String apiKey = System.getenv("API_KEY");

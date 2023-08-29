@@ -7,18 +7,15 @@ import Model.FootballPlayerModel;
 import Model.SoloModel;
 import com.opencsv.exceptions.CsvValidationException;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.parser.ParseException;
 
@@ -35,12 +32,6 @@ public class CommandManager extends ListenerAdapter {
     SlashCommandInteractionEvent round;
     int rounds = 1;
     int points = 0;
-    Button epl;
-    Button ligue1;
-    Button serieA;
-    Button laLiga;
-    Button bundesliga;
-    Button end;
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event){
         String command = event.getName();
@@ -92,12 +83,6 @@ public class CommandManager extends ListenerAdapter {
 
         FootballQuiz quiz = new FootballQuiz();
          correctPlayer = quiz.choosePlayerForQuiz(quiz.getPlayers());
-          epl = Button.primary("EPL","EPL");
-         ligue1 = Button.primary("Ligue1","Ligue1");
-         serieA = Button.primary("SerieA","SerieA");
-         laLiga = Button.primary("LaLiga","LaLiga");
-         bundesliga = Button.primary("Bundesliga","Bundesliga");
-         end = Button.danger("End","End");
          embed = new EmbedBuilder();
             embed.setTitle("Runda: "+rounds);
             if(correctPlayer.getFullName().equals("")){
@@ -106,12 +91,12 @@ public class CommandManager extends ListenerAdapter {
                 embed.setDescription("Zgadnij w jakiej lidze gra ten piłkarz! "+correctPlayer.getFullName());
             }
             event.getGuild().getTextChannelById("832636783161901156").sendMessage("Runda: "+rounds).setEmbeds(embed.build()).addActionRow(
-                    epl,
-                    ligue1,
-                    serieA,
-                    laLiga,
-                    bundesliga
-                    ).addActionRow(end).queue();
+                    Button.primary("EPL","EPL"),
+                    Button.primary("Ligue1","Ligue1"),
+                    Button.primary("SerieA","SerieA"),
+                    Button.primary("LaLiga","LaLiga"),
+                    Button.primary("Bundesliga","Bundesliga")
+                    ).addActionRow(Button.danger("End","End")).queue();
 
          }
     public void showRankInSolo(@NotNull SlashCommandInteractionEvent event, String summonerName) throws ParseException {
@@ -283,12 +268,11 @@ public void onButtonInteraction(@NotNull ButtonInteractionEvent event){
 }
 public void disableButtons(ButtonInteractionEvent event){
             event.getGuild().getTextChannelById("832636783161901156").editMessageEmbedsById(event.getGuild().getTextChannelById("832636783161901156").getLatestMessageId()).setEmbeds(embed.build()).setActionRow(
-                    Button.danger("EPL","EPL").asDisabled(),
-                    Button.danger("Ligue1","Ligue1").asDisabled(),
-                    Button.danger("SerieA","SerieA").asDisabled(),
-                    Button.danger("LaLiga","LaLiga").asDisabled(),
-                    Button.danger("Bundesliga","Bundesliga").asDisabled()
-            ).setActionRow(end.asDisabled()).queue();
+                    Button.primary("EPL","EPL").asDisabled(),
+                    Button.primary("Ligue1","Ligue1").asDisabled(),
+                    Button.primary("SerieA","SerieA").asDisabled(),
+                    Button.primary("LaLiga","LaLiga").asDisabled(),
+                    Button.primary("Bundesliga","Bundesliga").asDisabled()).queue();
 }
 
 }

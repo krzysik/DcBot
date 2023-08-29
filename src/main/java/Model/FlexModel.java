@@ -1,7 +1,5 @@
 package Model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class FlexModel {
     private String leagueId;
     private String queueType;

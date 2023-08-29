@@ -1,8 +1,5 @@
 package Model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-
 
 public class SoloModel {
     private String leagueId;
