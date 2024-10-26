@@ -1,5 +1,9 @@
 import Commands.CommandManager;
 import Listeners.onJoin;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -9,9 +13,13 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 import javax.security.auth.login.LoginException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PuniekBot {
     private final ShardManager shardManager;
+    private final AudioPlayerManager playerManager;
+    private final Map<Long, AudioPlayer> players;
 
     public PuniekBot() throws LoginException {
         String token = System.getenv("BOT_TOKEN");
@@ -27,6 +35,9 @@ public class PuniekBot {
         shardManager = builder.build();
 
         shardManager.addEventListener(new onJoin(),new CommandManager());
+        playerManager = new DefaultAudioPlayerManager();
+        playerManager.registerSourceManager(new YoutubeAudioSourceManager());
+        players = new HashMap<>();
     }
 
     public ShardManager getShardManager(){

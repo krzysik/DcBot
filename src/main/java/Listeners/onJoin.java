@@ -107,7 +107,7 @@ public class onJoin extends ListenerAdapter {
   public void saveDate(){
     LocalDate currentDate = LocalDate.now();
     String curDate = currentDate.toString();
-    Path path = Paths.get("D:\\puniekbot\\src\\main\\resources\\dates.txt");
+    Path path = Paths.get("src/resources/dates.txt");
 
     try (BufferedWriter writer = Files.newBufferedWriter(path, StandardOpenOption.APPEND)) {
       writer.write( curDate+"\n");
@@ -117,70 +117,45 @@ public class onJoin extends ListenerAdapter {
   }
 
   public void saveHighestStreak(int i) {
-    String streak;
-    Path path = Paths.get("D:\\puniekbot\\src\\main\\resources\\highestStreak.txt");
+    Path path = Paths.get("src/resources/highestStreak.txt");
 
     try (BufferedWriter writer = Files.newBufferedWriter(path, StandardOpenOption.WRITE)) {
-      writer.write(streak = Integer.toString(i));
+      writer.write(Integer.toString(i));
     } catch (IOException e) {
       System.err.format("IOException: %s%n", e);
     }
   }
 
     public int readStreak(Path path){
-     String line = null, last =null;
-      try{
-        File obj = new File(String.valueOf(path));
-        Scanner reader = new Scanner(obj);
-        while((line = reader.nextLine())!=null){
-          last=line;
+      String last = null;
+
+      try (Scanner reader = new Scanner(path.toFile())) {
+        while (reader.hasNextLine()) {
+          last = reader.nextLine();
         }
       } catch (FileNotFoundException e) {
         e.printStackTrace();
-      }catch(NoSuchElementException e){
-
       }
-      int highestStreak = Integer.parseInt(last);
-      return highestStreak;
+
+      return last != null ? Integer.parseInt(last) : 0;
     }
 
 
   static long findDifference(String start_date,
                              String end_date)
   {
-    // SimpleDateFormat converts the
-    // string format to date object
-    SimpleDateFormat sdf
-            = new SimpleDateFormat(
-            "yyyy-MM-dd");
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     long difference = 0;
     try {
 
-      // parse method is used to parse
-      // the text from a string to
-      // produce the date
+
       Date d1 = sdf.parse(start_date);
       Date d2 = sdf.parse(end_date);
 
-      //Calculate time difference
-      // in milliseconds
-      long difference_In_Time
-              = d2.getTime() - d1.getTime();
+      long difference_In_Time = d2.getTime() - d1.getTime();
 
-      //Calculate time difference in seconds,
-      // minutes, hours, years, and days
-
-       long difference_In_Days
-              = TimeUnit
-              .MILLISECONDS
-              .toDays(difference_In_Time)
-              % 365;
-
-      long difference_In_Years
-              = TimeUnit
-              .MILLISECONDS
-              .toDays(difference_In_Time)
-              / 365l;
+       long difference_In_Days = TimeUnit.MILLISECONDS.toDays(difference_In_Time) % 365;
 
       difference=difference_In_Days;
 
